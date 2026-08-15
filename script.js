@@ -18,6 +18,44 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Mobile Burger Menu Toggle
+const burger = document.getElementById('burger');
+const navLinksMenu = document.querySelector('.nav-links');
+
+if (burger && navLinksMenu) {
+    burger.addEventListener('click', () => {
+        navLinksMenu.classList.toggle('active');
+        burger.classList.toggle('active');
+        document.body.classList.toggle('no-scroll');
+    });
+
+    // Close the mobile menu whenever a nav link is tapped
+    navLinksMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinksMenu.classList.remove('active');
+            burger.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+        });
+    });
+}
+
+// Scroll Spy - Highlight the nav link for the section currently in view
+const spySections = document.querySelectorAll('section[id]');
+const spyLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+
+window.addEventListener('scroll', () => {
+    let currentId = '';
+    spySections.forEach(section => {
+        const sectionTop = section.offsetTop - 150;
+        if (window.scrollY >= sectionTop) {
+            currentId = section.getAttribute('id');
+        }
+    });
+    spyLinks.forEach(link => {
+        link.classList.toggle('active-link', link.getAttribute('href') === `#${currentId}`);
+    });
+});
+
 // Smooth Scroll for Navigation Links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -114,9 +152,12 @@ document.querySelectorAll('.skill-card').forEach(card => {
     });
 });
 
+const pinterestUsername = 'toufikmahata20';
+const pinterestGrid = document.getElementById('pinterest-grid');
+
 async function fetchPinterest() {
     // Pinterest RSS URL
-    const rssUrl = `https://www.pinterest.com/${username}/feed.rss`;
+    const rssUrl = `https://www.pinterest.com/${pinterestUsername}/feed.rss`;
     // Using a reliable RSS to JSON converter
     const apiPrefix = `https://api.rss2json.com/v1/api.json?rss_url=`;
 
@@ -125,8 +166,8 @@ async function fetchPinterest() {
         const data = await response.json();
 
         if (data.status === 'ok' && data.items.length > 0) {
-            grid.innerHTML = ''; // Clear loader
-            
+            pinterestGrid.innerHTML = ''; // Clear loader
+
             data.items.forEach(item => {
                 // Pinterest puts the image in the 'description' HTML string
                 // This regex finds the image source URL
@@ -151,7 +192,7 @@ async function fetchPinterest() {
                             </div>
                         </a>
                     `;
-                    grid.appendChild(card);
+                    pinterestGrid.appendChild(card);
                 }
             });
         } else {
@@ -160,7 +201,7 @@ async function fetchPinterest() {
     } catch (error) {
         console.error("Pinterest Load Error:", error);
         // FALLBACK: If the API fails, show a direct button to your Pinterest
-        grid.innerHTML = `
+        pinterestGrid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
                 <p>Unable to load live feed.</p>
                 <a href="https://in.pinterest.com/toufikmahata20/" target="_blank" class="btn main-btn">
@@ -172,5 +213,4 @@ async function fetchPinterest() {
 }
 
 // Run when page is ready
-document.addEventListener('DOMContentLoaded', fetchPinterest);    const username = 'toufikmahata20';
-    const grid = document.getElementById('pinterest-grid');
+document.addEventListener('DOMContentLoaded', fetchPinterest);
